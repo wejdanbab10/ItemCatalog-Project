@@ -1,0 +1,33 @@
+<html>
+
+<head>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+</head>
+<form action="#" method = 'post'>
+<body>
+<div class="a" > </br></br></br><h1> Welcome to the Online Blood Bank</h1></div>
+
+<h1> Information about each blood type</h1>
+
+
+{% for i in items %}
+
+<p> Blood Type : {{i.name}} 
+</br>
+Description : {{i.description}} 
+</br>
+Available Amount : {{i.amount}} </p> 
+   
+<a href = "{{url_for('editBloodTypeInfo', info_id = i.id)}}">  Edit </a> &nbsp;&nbsp;
+
+
+{% endfor %}
+
+</br></br></br></br></br>
+
+<a href = "{{url_for('BloodBank')}}"> << Back </a>
+
+
+</body>
+</form>
+</html>

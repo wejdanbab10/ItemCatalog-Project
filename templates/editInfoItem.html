@@ -1,0 +1,28 @@
+<html>
+<head>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<form action="{{url_for('editBloodTypeInfo',info_id = info_id)}}" method = 'post'>
+
+<body>
+<div class="a" > </br></br></br><h1> Welcome to the Online Blood Bank</h1></div>
+
+<h1> Edit Blood Type Amount</h1>
+
+Blood Type :{{amountToEdit.name}} <br>
+Amount: <input type="text" name="amount" size = "30" value={{amountToEdit.amount}}> </br>
+{{amountToEdit.bloodType_id}}</br>
+
+<input type="submit" value="Edit">  
+
+</br></br></br></br></br>
+
+
+<a href = "{{url_for('BloodBank')}}"> << Back </a>
+
+  
+</body>
+</form>
+
+</html>

@@ -1,0 +1,36 @@
+<html>
+
+<head>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+</head>
+<form action="#" method = 'post'>
+<body>
+<div class="row top-menu">
+		<div class="col-md-10"></div>
+		<div class="col-md-2 text-right">
+			<a href="{{url_for('showLogin')}}">Click Here to Log in </a>
+		</div>
+	</div>
+<div class="a" > </br></br></br><h1> Welcome to the Online Blood Bank</h1></div>
+
+<h1> Information about each blood type</h1>
+
+
+{% for i in items %}
+
+<p> Blood Type : {{i.name}} 
+</br>
+Description : {{i.description}} 
+</br>
+Available Amount : {{i.amount}} </p> 
+
+
+{% endfor %}
+
+</br></br></br></br></br>
+<a href = "{{url_for('BloodBank')}}"> << Back </a>
+
+
+</body>
+</form>
+</html>
