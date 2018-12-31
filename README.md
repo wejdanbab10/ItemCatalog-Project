@@ -28,8 +28,9 @@ In order to start running this web applicatinyou need first to clone or download
  6. Change the directory to to catalog directory by using <b>cd/catalog</b>
  7. Install or upgrade Flask by using this comman  <b>sudo python3 -m pip install --upgrade flask</b>
  8. Run the following command <b>python database_setup.py</b> to set up the Blood Bank Database in which all the information will be stored.
- 9. Now run this command <b>python databaseInfo.py</b> to insert information into the database.
- 10. Finally, run the web application by using this command <b>python application.py</b>
+ 9. Run this command <b>python databaseInfo.py</b> to insert information into the database.
+ 10. Now run the web application by using this command <b>python application.py</b>
+ 11. Finally, access and test the Blood Bank application by visiting http://localhost:8000 locally
  
  # Project Folder Structure
  
