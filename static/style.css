@@ -75,4 +75,5 @@ tr:nth-child(even) {
 .top-menu {
 	padding-top: 30px;
 	padding-bottom: 30px;
+	left: 10px;
 }
