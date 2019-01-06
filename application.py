@@ -19,7 +19,8 @@ import requests
 
 app = Flask(__name__)
 
-CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
+CLIENT_ID = \
+    json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = 'Blood Bank App'
 
 # Connect to Database and create database session
@@ -35,7 +36,8 @@ session = DBSession()
 
 @app.route('/login')
 def showLogin():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in xrange(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
 
@@ -46,7 +48,8 @@ def gconnect():
     # Validate state token
 
     if request.args.get('state') != login_session['state']:
-        response = make_response(json.dumps('Invalid state parameter.'), 401)
+        response = \
+            make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -63,7 +66,7 @@ def gconnect():
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:
         response = \
-            make_response(json.dumps('Failed to upgrade the authorization code.'), 401)
+            make_response(json.dumps('Failed to upgrade the code.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -88,7 +91,8 @@ def gconnect():
     gplus_id = credentials.id_token['sub']
     if result['user_id'] != gplus_id:
         response = \
-            make_response(json.dumps("Token's user ID doesn't match given user ID."), 401)
+            make_response(json.dumps("Token's user ID doesn't" +
+                                     "match given user ID."), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -96,7 +100,7 @@ def gconnect():
 
     if result['issued_to'] != CLIENT_ID:
         response = \
-            make_response(json.dumps("Token's client ID does not match app's."), 401)
+            make_response(json.dumps("Token's clientID isn't match app"), 401)
         print "Token's client ID does not match app's."
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -105,7 +109,7 @@ def gconnect():
     stored_gplus_id = login_session.get('gplus_id')
     if stored_access_token is not None and gplus_id == stored_gplus_id:
         response = \
-            make_response(json.dumps('Current user is already connected.'), 200)
+            make_response(json.dumps('Current user is connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -125,10 +129,9 @@ def gconnect():
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
-    
     user_id = getUserID(login_session['email'])
     if not user_id:
-    	user_id = createUser(login_session)
+        user_id = createUser(login_session)
     login_session['user_id'] = user_id
 
     output = ''
@@ -138,12 +141,11 @@ def gconnect():
     output += '<img src="'
     output += login_session['picture']
     output += \
-        ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+        ' " style = "width: 300px; height: 300px;border-radius: 150px; \
+        -webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
     flash('you are now logged in as %s' % login_session['username'])
     print 'done!'
     return output
-
-
 
 
 # User Helper Functions
@@ -169,8 +171,6 @@ def getUserID(email):
         return user.id
     except:
         return None
-
-
     # DISCONNECT - Revoke a current user's token and reset their login_session
 
 
@@ -202,20 +202,12 @@ def gdisconnect():
         return redirect(url_for('BloodBank'))
     else:
         response = \
-            make_response(json.dumps('Failed to revoke token for given user.', 400))
+            make_response(json.dumps('Failed to revoke token for user.', 400))
         response.headers['Content-Type'] = 'application/json'
         return response
 
-
-
-
-
-
-
-
-
-
 # JSON APIs to view Blood Bank Information
+
 
 @app.route('/bloodbank/JSON')
 def BloodBankJSON():
@@ -232,17 +224,18 @@ def showBloodTypeJSON(bloodtype_id):
         session.query(Items).filter_by(bloodType_id=bloodtype_id).all()
     return jsonify(blood_types=blood_types.serialize)
 
-
-
 """
-    BloodBank: Is a method that allows loggedin and loggedout users to check the avilable
-    blood types in the blood bank
+    BloodBank: Is a method that allows loggedin and loggedout users to check
+    the avilable blood types in the blood bank
     Args:
         no args
     Returns:
-        return puplicbloodbank.html templet (If not loggedin) or bloodbank.html temple 
-        (If loggedin) which shows list of the blood types in the system of the blood bank
+        return puplicbloodbank.html templet (If not loggedin) or
+        bloodbank.html temple (If loggedin) which shows list of the blood types
+        in the system of the blood bank
     """
+
+
 @app.route('/')
 @app.route('/bloodbank')
 def BloodBank():
@@ -257,14 +250,16 @@ def BloodBank():
 
 
 """
-    showBloodType: Is a method that shows detailed information about a specific blood type
+    showBloodType: Is a method that shows detailed information about a specific
+    blood type
     Args:
-        bloodtype_id (data type: int): Takes the blood type id as an argument to retrive
-        information about this blood type only.
+        bloodtype_id (data type: int): Takes the blood type id as an argument
+        to retrive information about this blood type only.
     Returns:
-        return puplicinfo.html templet (If not loggedin) or info.html temple (If loggedin)
-        which will show the detailed info about this blood type
+        return puplicinfo.html templet (If not loggedin) or info.html temple
+        (If loggedin) which will show the detailed info about this blood type
     """
+
 
 @app.route('/bloodbank/<int:bloodtype_id>')
 @app.route('/bloodbank/<int:bloodtype_id>/info')
@@ -275,7 +270,8 @@ def showBloodType(bloodtype_id):
     items = \
         session.query(Items).filter_by(bloodType_id=bloodtype_id).all()
 
-    if 'username' not in login_session or creator.id != login_session['user_id']:
+    if 'username' not in login_session or creator.id != \
+            login_session['user_id']:
         return render_template('puplicinfo.html', items=items,
                                blood_types=blood_types,
                                bloodtype_id=bloodtype_id, creator=creator)
@@ -286,22 +282,25 @@ def showBloodType(bloodtype_id):
 
 
 """
-    editBloodType: Is a method that allows loggedin  users to edit info about a specific 
-    blood type
+    editBloodType: Is a method that allows loggedin  users to edit
+    info about a specific blood type
     Args:
-        bloodtype_id (data type: int): Takes the blood type id as an argument to retrive
-        information to edit about this blood type only.
+        bloodtype_id (data type: int): Takes the blood type id as an argument
+        to retrive information to edit about this blood type only.
     Returns:
-        return editBloodType.html temple which will show a form that allows editing the 
-        status of this blood type
+        return editBloodType.html temple which will show a form that allows
+        editing the status of this blood type
     """
+
+
 @app.route('/bloodbank/<int:bloodtype_id>/edit', methods=['GET', 'POST'])
 def editBloodType(bloodtype_id):
     typeToEdit = session.query(BloodType).filter_by(id=bloodtype_id).one()
     if 'username' not in login_session:
         return redirect('/login')
     if typeToEdit.user_id != login_session['user_id']:
-        return "<script>function myFunction() {alert('You are not authorized to edit this blood type.');}</script><body onload='myFunction()''>"
+        return "<script>function myFunction() {alert('You are not authorized to \
+        edit this blood type.');}</script><body onload='myFunction()''>"
     if request.method == 'POST':
         request.form['status']
         typeToEdit.status = request.form['status']
@@ -318,15 +317,16 @@ def editBloodType(bloodtype_id):
 
 
 """
-    editBloodTypeInfo: Is a method that allows loggedin  users to edit a specific 
-    info about the blood type
+    editBloodTypeInfo: Is a method that allows loggedin  users to edit
+    a specific info about the blood type
     Args:
         info_id (data type: int): Takes the info id as an argument to retrive
         the amount of this blood type to edit it only.
     Returns:
-        return editInfoItem.html temple which will show a form that allows editing the
-        amount about this blood type
+        return editInfoItem.html temple which will show a form that allows
+        editing the amount about this blood type
     """
+
 
 @app.route('/bloodbank/<int:info_id>/editinfo', methods=['GET', 'POST'])
 def editBloodTypeInfo(info_id):
@@ -348,25 +348,29 @@ def editBloodTypeInfo(info_id):
 
 
 """
-    deleteBloodType: Is a method that allows loggedin  users to delete a specific 
-    blood type
+    deleteBloodType: Is a method that allows loggedin  users to delete
+    a specific blood type
     Args:
-        info_id (data type: int): Takes the blood type id as an argument to specify which
-        blood type to delete.
+        info_id (data type: int): Takes the blood type id as an argument to
+        specify which blood type to delete.
     Returns:
-        return deleteBloodType.html temple which will show a form that allows deleting 
-        this blood type
+        return deleteBloodType.html temple which will show a form that allows
+        deleting this blood type
     """
+
+
 @app.route('/bloodbank/<int:bloodtype_id>/delete', methods=['GET',
            'POST'])
 def deleteBloodType(bloodtype_id):
 
-    BloodTypeToDelete = session.query(BloodType).filter_by(id=bloodtype_id).one()
+    BloodTypeToDelete = \
+            session.query(BloodType).filter_by(id=bloodtype_id).one()
     ItemsToDelete = session.query(Items).filter_by(id=bloodtype_id).one()
     if 'username' not in login_session:
         return redirect('/login')
     if BloodTypeToDelete.user_id != login_session['user_id']:
-        return "<script>function myFunction() {alert('You are not authorized to delete this blood type.');}</script><body onload='myFunction()''>"
+        return "<script>function myFunction() {alert('You are not authorized to \
+         delete this blood type.');}</script><body onload='myFunction()''>"
     if request.method == 'POST':
         session.delete(BloodTypeToDelete)
         session.delete(ItemsToDelete)
@@ -382,31 +386,31 @@ def deleteBloodType(bloodtype_id):
     Args:
         no args
     Returns:
-        return newBloodType.html temple which will show a form that allows adding detailed 
-        info about the blood type
+        return newBloodType.html temple which will show a form that allows
+        adding detailed info about the blood type
     """
-    
+
+
 @app.route('/bloodbank/new', methods=['GET', 'POST'])
 def newBloodType():
-	if 'username' not in login_session:
-		return redirect('/login')
-    	if request.method == 'POST':
-        	newBloodType = BloodType(name=request.form['name'],
-                                 status=request.form['status'], user_id=login_session['user_id'])
-        	newInfoBloodType = Items(name=request.form['name'],
-                                 description=request.form['description'],
-                                 amount=request.form['amount'], user_id=login_session['user_id'],
-                                 blood_type=newBloodType)
-        	session.add(newBloodType)
-        	session.add(newInfoBloodType)
-        	flash('New Blood Type %s Successfully Created'
-              % newBloodType.name)
-        	session.commit()
+    if 'username' not in login_session:
+        return redirect('/login')
+        if request.method == 'POST':
+            newBloodType = BloodType(name=request.form['name'],
+                                     status=request.form['status'],
+                                     user_id=login_session['user_id'])
+            newInfoBloodType = Items(name=request.form['name'],
+                                     description=request.form['description'],
+                                     user_id=login_session['user_id'],
+                                     blood_type=newBloodType)
+            session.add(newBloodType)
+            session.add(newInfoBloodType)
+            flash('New Blood Type %s Successfully Created' % newBloodType.name)
+            session.commit()
 
-        	return redirect(url_for('BloodBank'))
-    	else:
-        	return render_template('newBloodType.html')
-			
+        return redirect(url_for('BloodBank'))
+    else:
+        return render_template('newBloodType.html')
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
